@@ -1,0 +1,53 @@
+# ===== Leiningen / Clojure CLI 构建产物 =====
+/target/
+/classes/
+/checkouts/
+*.jar
+*.class
+
+# ===== deps.edn 缓存 =====
+/.cpcache/
+/.clj-kondo/
+
+# ===== IDE 文件 =====
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ===== REPL 历史 =====
+.lein-repl-history
+.clojure_repl_history
+
+# ===== 操作系统生成文件 =====
+Thumbs.db
+Desktop.ini
+
+# ===== Java 相关 =====
+*.class
+*.log
+*.tmp
+
+# ===== Maven 本地仓库（如果项目内有本地依赖） =====
+# 通常不需要，但如果有 lib/ 目录可以忽略
+/lib/
+
+# ===== 环境变量 / 密钥 =====
+.env
+.env.local
+*.pem
+
+**/.cache/**/*
+**/.cache/
+
+#*#
+
+.cpcache/
+dist/
+
+krro-plugin-modeling.iml

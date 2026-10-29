@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>top.kzre</groupId>
+    <artifactId>krro-plugin-modeling-editor-javafx</artifactId>
+    <version>0.1.0</version>
+    <packaging>jar</packaging>
+
+    <name>krro-plugin-modeling-editor-javafx</name>
+    <description>JavaFX UI renderer for Krrō (Painting Plugin)</description>
+
+    <properties>
+        <clojure.version>1.11.1</clojure.version>
+        <lwjgl.version>3.3.3</lwjgl.version>
+        <timbre.version>6.3.1</timbre.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+
+<!--        直接使用来自painting的传递依赖-->
+        <dependency>
+            <groupId>top.kzre</groupId>
+            <artifactId>krro-plugin-modeling-editor-core</artifactId>
+            <version>0.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>top.kzre</groupId>
+            <artifactId>krro-d3-renderer-studio-gl</artifactId>
+            <version>0.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>top.kzre</groupId>
+            <artifactId>krro-plugin-painting-editor-javafx</artifactId>
+            <version>0.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>top.kzre</groupId>
+            <artifactId>krro-canvas-raster</artifactId>
+            <version>0.1.0</version>
+        </dependency>
+    </dependencies>
+</project>
