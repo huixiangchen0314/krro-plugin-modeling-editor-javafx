@@ -1,51 +1,37 @@
 (ns top.kzre.krro.plugin.modeling.editor.javafx.canvas.core
   (:require
-    [top.kzre.krro.plugin.modeling.editor.javafx.canvas.opengl :as opengl]
-    [top.kzre.krro.ui.javafx.core :refer [make-component]])
+   [top.kzre.krro.core.util.promise :as promise]
+   [top.kzre.krro.plugin.modeling.core.project.asset :as asset]
+   [top.kzre.krro.plugin.modeling.core.project.core :as project]
+   [top.kzre.krro.plugin.modeling.editor.javafx.canvas.gl :as gl]
+   [top.kzre.krro.plugin.modeling.editor.javafx.canvas.gl-canvas-kernel :as gl-kernal]
+   [top.kzre.krro.plugin.modeling.editor.javafx.canvas.modeling-canvas :as modeling-canvas])
   (:import
-    (javafx.animation AnimationTimer)
-    (javafx.scene Node)
-    (javafx.scene.canvas Canvas)
-    (javafx.scene.image ImageView)
-    (javafx.scene.layout StackPane)))
+    (top.kzre.krro.d3.core.scene AssetMeshRef SceneEditor)
+    (top.kzre.krro.plugin.modeling.core.project HeapK3DRuntime K3DRuntime ProjectScene)
+    (top.kzre.krro.plugin.modeling.core.schedule.gl GLSceneSchedulerHolderFactory)
+    (top.kzre.krro.plugin.painting.editor.javafx.glfx GLRuntime)))
 
-(def ^:private canvas-width  800)
-(def ^:private canvas-height 600)
+;; 初始化 运行时
+(let [flyweight (promise/await (gl/render-flyweight-promise (GLRuntime/offscreen)))
+      scheduler-holder-factory (GLSceneSchedulerHolderFactory. flyweight)
+      k3d-impl (HeapK3DRuntime. scheduler-holder-factory)]
+  (K3DRuntime/init k3d-impl))
+;; mock 数据
+(def scene-id 1)
+(project/create-scene! scene-id)
+(project/write-asset-lib!
+  (fn [asset-lib]
+    (let [cube-asset-id (asset/add-cube asset-lib)]
+      (project/write-scene!
+        1
+        (fn [scene]
+          (let [scene-editor (.getSceneEditor ^ProjectScene scene)]
+            (.addRoot ^SceneEditor scene-editor
+                      (AssetMeshRef. scene-id cube-asset-id))))))))
 
-(defn- create-view []
-  (let [canvas     (Canvas. canvas-width canvas-height)
-        image-view (ImageView.)
-        root       (StackPane.)]
-    ;; 让子节点填满 StackPane
-    (.setManaged image-view false)
-    (.setManaged canvas false)
-    (doseq [^Node n [image-view canvas]]
-      (.add (.getChildren root) n))
-    ;; 把 ImageView 引用挂到根节点上，start-session 里取用
-    (.setUserData root {:canvas canvas :image-view image-view})
-    root))
 
-(defn- start-session [^StackPane root _frame]
-  (let [{:keys [^ImageView image-view]} (.getUserData root)]
-    ;; 1) 初始化离屏渲染器（内部会阻塞直到 GL 上下文就绪）
-    (opengl/init-offscreen-renderer image-view)
-
-    ;; 2) 每帧驱动一次渲染
-    (let [timer (proxy [AnimationTimer] []
-                  (handle [_now]
-                    (opengl/render-and-update)))]
-      (.start timer)
-
-      ;; 3) 清理函数：先停 timer 再销毁 GL
-      (fn dispose-fn []
-        (.stop timer)
-        (opengl/destroy)))))
-
-(def create-canvas
-  (make-component
-    []
-    ;; create-fn
-    create-view
-    ;; init-fn（注意类型提示已改为 StackPane）
-    (fn [^StackPane root _old-props _new-props frame]
-      (start-session root frame))))
+(def create-gl-canvas
+  (modeling-canvas/make-factory
+    (fn [opts]
+      (gl-kernal/build-kernel (GLRuntime/offscreen) opts))))

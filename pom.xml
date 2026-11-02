@@ -30,17 +30,7 @@
         </dependency>
         <dependency>
             <groupId>top.kzre</groupId>
-            <artifactId>krro-d3-renderer-studio-gl</artifactId>
-            <version>0.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>top.kzre</groupId>
             <artifactId>krro-plugin-painting-editor-javafx</artifactId>
-            <version>0.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>top.kzre</groupId>
-            <artifactId>krro-canvas-raster</artifactId>
             <version>0.1.0</version>
         </dependency>
     </dependencies>

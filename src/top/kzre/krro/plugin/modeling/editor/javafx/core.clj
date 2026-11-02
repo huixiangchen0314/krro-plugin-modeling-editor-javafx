@@ -1,8 +1,8 @@
 (ns top.kzre.krro.plugin.modeling.editor.javafx.core
   (:require
-   [top.kzre.krro.core.core :as krro]
-   [top.kzre.krro.plugin.modeling.editor.core.core]
-   [top.kzre.krro.plugin.modeling.editor.javafx.canvas.api :as canvas]))
+    [top.kzre.krro.core.core :as krro]
+    [top.kzre.krro.plugin.modeling.editor.core.core]
+    [top.kzre.krro.plugin.modeling.editor.javafx.canvas.core :as canvas]))
 
 (krro/reg-plugin!
   {:name :krro.modeling/editor-javafx

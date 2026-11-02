@@ -2,12 +2,8 @@
          ;"target/classes"
          ]
  :deps {org.clojure/clojure {:mvn/version "1.11.1"}
-        top.kzre/krro-core {:mvn/version "0.1.0"}
-        top.kzre/krro-d3 {:mvn/version "0.1.0"}
         top.kzre/krro-plugin-modeling-editor-core {:mvn/version "0.1.0"}
         top.kzre/krro-plugin-painting-editor-javafx {:mvn/version "0.1.0"}
-        top.kzre/krro-d3-renderer-studio-gl {:mvn/version "0.1.0"}
-        top.kzre/krro-canvas-raster {:mvn/version "0.1.0"}
 
         ;; 非强依赖，可能独立演变，显示声明
         com.taoensso/timbre {:mvn/version "6.3.1"}
