@@ -3,14 +3,12 @@
     [taoensso.timbre :as log]
     [top.kzre.krro.core.util.channel :refer [<| >| chan close!]]
     [top.kzre.krro.core.util.promise :as promise :refer [plet>]]
-    [top.kzre.krro.core.window :as win]
     [top.kzre.krro.plugin.modeling.core.viewport.core :as core.viewport]
     [top.kzre.krro.plugin.modeling.editor.javafx.canvas.protocol :as protocol]
     [top.kzre.krro.plugin.painting.core.project.canvas :as pc]
-    [top.kzre.krro.plugin.painting.editor.javafx.input.pointer :as pointer]
-    [top.kzre.krro.plugin.painting.editor.javafx.input.protocol :as input]
     [top.kzre.krro.plugin.painting.editor.javafx.graph :as javafx.graph]
-    [top.kzre.krro.plugin.painting.editor.javafx.glfx.core :as glfx])
+    [top.kzre.krro.plugin.painting.editor.javafx.input.pointer :as pointer]
+    [top.kzre.krro.plugin.painting.editor.javafx.input.protocol :as input])
   (:import
    (com.huskerdev.grapl.gl GLContext GLProfile)
    (com.huskerdev.openglfx.canvas GLCanvas GLCanvas$Builder GLCanvas$Builder$ContextDescription$New)
@@ -19,8 +17,7 @@
    (java.util.function Consumer)
    (javafx.application Platform)
    (javafx.scene.canvas Canvas)
-   (javafx.scene.layout Region StackPane)
-   (javafx.scene Node)
+   (javafx.scene.layout StackPane)
    (top.kzre.krro.core.util SerialExecutor)
    (top.kzre.krro.plugin.modeling.core.project K3DRuntime)
    (top.kzre.krro.plugin.modeling.core.schedule Session)
