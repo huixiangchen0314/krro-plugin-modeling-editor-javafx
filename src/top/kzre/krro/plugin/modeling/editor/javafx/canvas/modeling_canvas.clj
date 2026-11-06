@@ -1,14 +1,14 @@
 (ns top.kzre.krro.plugin.modeling.editor.javafx.canvas.modeling-canvas
   (:require
-    [top.kzre.krro.core.frame :as frame]
-    [top.kzre.krro.core.reframe.core :as rf]
-    [top.kzre.krro.plugin.modeling.core.project.scene :as scene]
-    [top.kzre.krro.plugin.modeling.core.viewport.core :as core.viewport]
-    [top.kzre.krro.plugin.modeling.editor.javafx.canvas.protocol :as protocol]
-    [top.kzre.krro.ui.javafx.core :refer [make-component]])
+   [top.kzre.krro.core.frame :as frame]
+   [top.kzre.krro.core.reframe.core :as rf]
+   [top.kzre.krro.plugin.modeling.core.project.scene :as scene]
+   [top.kzre.krro.plugin.modeling.core.viewport.core :as core.viewport]
+   [top.kzre.krro.plugin.modeling.editor.javafx.canvas.protocol :as protocol]
+   [top.kzre.krro.ui.javafx.core :refer [make-component]])
   (:import
     (javafx.scene.layout StackPane)
-    (top.kzre.krro.plugin.modeling.core.schedule RenderIds)))
+   (top.kzre.krro.plugin.modeling.core.schedule RenderIds)))
 
 (def ^:private state-atom-key ::state-atom)
 
@@ -20,12 +20,18 @@
         {:keys [kernel]} @state-atom
         release-store (scene/reg-store scene-id)
         vp-watch-key (random-uuid)]
+    ;; 重建加速结构
+    (rf/dispatch scene/app-id [:scene-accel/rebuild scene-id])
     (add-watch (frame/params-atom frame)
                vp-watch-key
                (fn [_ src old new]
-                 (let [vp (core.viewport/get-viewport new)]
+                 (when-let [vp (core.viewport/get-viewport new)]
+                   ;(println "vp: " vp)
                    (protocol/set-viewport! kernel vp))))
-    (swap! state-atom assoc :scene-id scene-id :frame frame)
+    (swap! state-atom assoc
+           :scene-id scene-id
+           :frame frame
+           )
     (protocol/set-scene! kernel scene-id)
     (protocol/set-renderer! kernel renderer-id)
 
@@ -50,10 +56,12 @@
       (let [state-atom (atom {})
             on-event (fn [ev]
                        (let [{:keys [scene-id frame kernel]} @state-atom
+                             view-width (protocol/view-width kernel)
                              view-height (protocol/view-height kernel)]
                          (when scene-id
                            (rf/dispatch scene/app-id [:tool/dispatch-event scene-id ev frame
-                                                      {:view-height view-height}]))))
+                                                      {:view-width view-width
+                                                       :view-height view-height}]))))
             {:keys [^StackPane container kernel]}
             (kernel-supplier {:on-event on-event})]
         (swap! state-atom assoc :kernel kernel)

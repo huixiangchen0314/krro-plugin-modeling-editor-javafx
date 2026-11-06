@@ -3,25 +3,29 @@
     [taoensso.timbre :as log]
     [top.kzre.krro.core.util.channel :refer [<| >| chan close!]]
     [top.kzre.krro.core.util.promise :as promise :refer [plet>]]
+    [top.kzre.krro.core.window :as win]
     [top.kzre.krro.plugin.modeling.core.viewport.core :as core.viewport]
     [top.kzre.krro.plugin.modeling.editor.javafx.canvas.protocol :as protocol]
     [top.kzre.krro.plugin.painting.core.project.canvas :as pc]
     [top.kzre.krro.plugin.painting.editor.javafx.input.pointer :as pointer]
-    [top.kzre.krro.plugin.painting.editor.javafx.input.protocol :as input])
+    [top.kzre.krro.plugin.painting.editor.javafx.input.protocol :as input]
+    [top.kzre.krro.plugin.painting.editor.javafx.graph :as javafx.graph]
+    [top.kzre.krro.plugin.painting.editor.javafx.glfx.core :as glfx])
   (:import
-    (com.huskerdev.grapl.gl GLContext GLProfile)
-    (com.huskerdev.openglfx.canvas GLCanvas GLCanvas$Builder GLCanvas$Builder$ContextDescription$New)
-    (com.huskerdev.openglfx.canvas.events GLRenderEvent)
-    (com.huskerdev.openglfx.lwjgl LWJGLExecutor)
-    (java.util.function Consumer)
-    (javafx.application Platform)
-    (javafx.scene.canvas Canvas)
-    (javafx.scene.layout StackPane)
-    (top.kzre.krro.core.util SerialExecutor)
-    (top.kzre.krro.plugin.modeling.core.project K3DRuntime)
-    (top.kzre.krro.plugin.modeling.core.schedule Session)
-    (top.kzre.krro.plugin.painting.editor.javafx.glfx GLRuntime GLSyncTiledTextureBlitter)
-    (top.kzre.krro.util.math KMath)))
+   (com.huskerdev.grapl.gl GLContext GLProfile)
+   (com.huskerdev.openglfx.canvas GLCanvas GLCanvas$Builder GLCanvas$Builder$ContextDescription$New)
+   (com.huskerdev.openglfx.canvas.events GLRenderEvent)
+   (com.huskerdev.openglfx.lwjgl LWJGLExecutor)
+   (java.util.function Consumer)
+   (javafx.application Platform)
+   (javafx.scene.canvas Canvas)
+   (javafx.scene.layout Region StackPane)
+   (javafx.scene Node)
+   (top.kzre.krro.core.util SerialExecutor)
+   (top.kzre.krro.plugin.modeling.core.project K3DRuntime)
+   (top.kzre.krro.plugin.modeling.core.schedule Session)
+   (top.kzre.krro.plugin.painting.editor.javafx.glfx GLRuntime GLSyncTiledTextureBlitter)
+   (top.kzre.krro.util.math KMath)))
 
 
 (defn- make-state []
@@ -142,13 +146,14 @@
       (setup-viewport! this viewport)))
 
   (overlay-gc [_]
-    (.getGraphicsContext2D overlay-canvas))
+    (javafx.graph/make-javafx-graphics
+      (.getGraphicsContext2D overlay-canvas)))
   (view-height [_] (.getHeight fx-container))
+  (view-width [_] (.getWidth fx-container))
   (view-aspect [_]
     (let [w (.getWidth fx-container)
           h (.getHeight fx-container)]
      (if (pos? h) (double (/ w h)) 0) ))
-
   (close [_]
     (let [[old _] (swap-vals! state-atom assoc :closed true)]
       (when-not (:closed old)
@@ -210,7 +215,6 @@
      :gl-canvas      gl-canvas
      :overlay-canvas overlay}))
 
-
 (defn build-kernel
   [^GLRuntime gl-runtime
    {:keys [on-event]}]
@@ -220,7 +224,9 @@
         (build-layout gl-runtime)
 
         sync-blitter   (GLSyncTiledTextureBlitter/create pc/global-tile-size)
-        mouse-input    (pointer/make-pointer-input container on-event)
+        mouse-input    (pointer/make-pointer-input
+                         container
+                         on-event)
 
         kernel
         (map->GLCanvasKernalImpl
